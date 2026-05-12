@@ -1,14 +1,18 @@
 [project]
 name = "my-python-ci"
 version = "0.1.0"
-dependencies = []
+dependencies = [
+    "fastapi",
+    "uvicorn"
+]
 
 [project.optional-dependencies]
 dev = [
     "pytest",
     "pytest-cov",
     "ruff",
-    "black"
+    "black",
+    "httpx"
 ]
 
 [tool.black]

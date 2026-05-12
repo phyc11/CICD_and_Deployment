@@ -13,7 +13,7 @@ if docker ps -a --format '{{.Names}}' | grep -Eq "^${CONTAINER_NAME}\$"; then
     docker rm "$CONTAINER_NAME" || true
 fi
 
-docker run -d --name "$CONTAINER_NAME" -p "$PORT:$PORT" "$IMAGE_NAME"
+docker run -d --name "$CONTAINER_NAME" -p "$PORT:$PORT" -e PORT="$PORT" "$IMAGE_NAME"
 
 MAX_RETRIES=5
 RETRY_COUNT=0
