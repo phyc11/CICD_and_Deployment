@@ -1,0 +1,93 @@
+name: Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+  deployments: write
+  packages: read
+
+jobs:
+  deploy-staging:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Convert repository name to lowercase
+        id: repo-case
+        run: |
+          REPO_LOWERCASE=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "repo=$REPO_LOWERCASE" >> $GITHUB_OUTPUT
+
+      - name: Execute deployment script
+        run: |
+          chmod +x ./deploy.sh
+          ./deploy.sh "ghcr.io/${{ steps.repo-case.outputs.repo }}:latest" "staging-app" "8001"
+
+      - name: Health check verification
+        run: |
+          STATE=$(docker inspect --format='{{.State.Running}}' staging-app)
+          if [ "$STATE" != "true" ]; then
+            exit 1
+          fi
+
+      - name: Deployment status notification
+        if: always()
+        run: |
+          echo "::notice title=Deployment Status::Staging deployment finished with status: ${{ job.status }}"
+
+  deploy-production:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Convert repository name to lowercase
+        id: repo-case
+        run: |
+          REPO_LOWERCASE=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "repo=$REPO_LOWERCASE" >> $GITHUB_OUTPUT
+
+      - name: Execute deployment script
+        run: |
+          chmod +x ./deploy.sh
+          ./deploy.sh "ghcr.io/${{ steps.repo-case.outputs.repo }}:latest" "production-app" "8000"
+
+      - name: Health check verification
+        run: |
+          STATE=$(docker inspect --format='{{.State.Running}}' production-app)
+          if [ "$STATE" != "true" ]; then
+            exit 1
+          fi
+
+      - name: Deployment status notification
+        if: always()
+        run: |
+          echo "::notice title=Deployment Status::Production deployment finished with status: ${{ job.status }}"
