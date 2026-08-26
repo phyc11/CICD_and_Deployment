@@ -3,7 +3,9 @@ name = "my-python-ci"
 version = "0.1.0"
 dependencies = [
     "fastapi",
-    "uvicorn"
+    "uvicorn",
+    "pyjwt",
+    "passlib[bcrypt]"
 ]
 
 [project.optional-dependencies]

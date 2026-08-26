@@ -2,7 +2,15 @@ import os
 from fastapi import FastAPI
 import uvicorn
 
-app = FastAPI()
+from src.api.v1.endpoints.auth import router as auth_router
+
+app = FastAPI(
+    title="FastAPI CI/CD Demo",
+    version="0.1.0",
+)
+
+# Include Auth Router
+app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 
 
 def add(a: int, b: int) -> int:
