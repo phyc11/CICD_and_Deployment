@@ -3,6 +3,7 @@ from fastapi import FastAPI
 import uvicorn
 
 from src.api.v1.endpoints.auth import router as auth_router
+from src.api.v1.endpoints.items import router as items_router
 from src.api.v1.endpoints.users import router as users_router
 
 app = FastAPI(
@@ -13,6 +14,7 @@ app = FastAPI(
 # Include Routers
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(users_router, prefix="/api/v1/users", tags=["users"])
+app.include_router(items_router, prefix="/api/v1/items", tags=["items"])
 
 
 def add(a: int, b: int) -> int:
