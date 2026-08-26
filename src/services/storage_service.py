@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
 import os
-import shutil
 import uuid
 
 from fastapi import UploadFile
@@ -19,8 +18,15 @@ class StorageService:
     def reset_state(self):
         self._files.clear()
         if os.path.exists(self.upload_dir):
-            shutil.rmtree(self.upload_dir)
-        os.makedirs(self.upload_dir, exist_ok=True)
+            for filename in os.listdir(self.upload_dir):
+                file_path = os.path.join(self.upload_dir, filename)
+                if os.path.isfile(file_path):
+                    try:
+                        os.remove(file_path)
+                    except OSError:
+                        pass
+        else:
+            os.makedirs(self.upload_dir, exist_ok=True)
 
     def save_file(self, file: UploadFile, uploader_id: str) -> FileUploadResponse:
         file_id = str(uuid.uuid4())
