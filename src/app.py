@@ -5,7 +5,9 @@ import uvicorn
 from src.api.v1.endpoints.auth import router as auth_router
 from src.api.v1.endpoints.items import router as items_router
 from src.api.v1.endpoints.storage import router as storage_router
+from src.api.v1.endpoints.system import router as system_router
 from src.api.v1.endpoints.users import router as users_router
+from src.services.system_service import system_service
 
 app = FastAPI(
     title="FastAPI CI/CD Demo",
@@ -17,6 +19,7 @@ app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(users_router, prefix="/api/v1/users", tags=["users"])
 app.include_router(items_router, prefix="/api/v1/items", tags=["items"])
 app.include_router(storage_router, prefix="/api/v1/storage", tags=["storage"])
+app.include_router(system_router, prefix="/api/v1/system", tags=["system"])
 
 
 def add(a: int, b: int) -> int:
@@ -26,6 +29,11 @@ def add(a: int, b: int) -> int:
 @app.get("/")
 def read_root():
     return {"status": "OK", "message": "FastAPI service is running"}
+
+
+@app.get("/health", tags=["system"])
+def root_health_check():
+    return system_service.get_health()
 
 
 @app.get("/add")
