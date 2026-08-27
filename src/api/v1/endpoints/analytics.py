@@ -27,7 +27,7 @@ def get_analytics_overview(
     status_code=status.HTTP_200_OK,
 )
 def get_analytics_growth(
-    period: str = Query("daily", regex="^(daily|monthly)$"),
+    period: str = Query("daily", pattern="^(daily|monthly)$"),
     days: int = Query(7, ge=1, le=365),
     admin_user: UserResponse = Depends(require_admin),
 ):
