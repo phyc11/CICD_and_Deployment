@@ -5,6 +5,7 @@ import uvicorn
 from src.api.v1.endpoints.analytics import router as analytics_router
 from src.api.v1.endpoints.auth import router as auth_router
 from src.api.v1.endpoints.items import router as items_router
+from src.api.v1.endpoints.settings import router as settings_router
 from src.api.v1.endpoints.storage import router as storage_router
 from src.api.v1.endpoints.system import router as system_router
 from src.api.v1.endpoints.users import router as users_router
@@ -22,6 +23,7 @@ app.include_router(items_router, prefix="/api/v1/items", tags=["items"])
 app.include_router(storage_router, prefix="/api/v1/storage", tags=["storage"])
 app.include_router(system_router, prefix="/api/v1/system", tags=["system"])
 app.include_router(analytics_router, prefix="/api/v1/analytics", tags=["analytics"])
+app.include_router(settings_router, prefix="/api/v1/settings", tags=["settings"])
 
 
 def add(a: int, b: int) -> int:
